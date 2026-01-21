@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { ChatBot } from "@/components/chatbot/ChatBot";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Reports from "./pages/Reports";
@@ -30,6 +31,8 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </DashboardLayout>
+
+          {/* Floating chatbot stays global */}
           <ChatBot />
         </BrowserRouter>
       </TooltipProvider>

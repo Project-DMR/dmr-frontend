@@ -1,4 +1,4 @@
-"use client";
+
 
 import { useEffect, useState } from "react";
 import {
@@ -32,7 +32,7 @@ import { KPICard } from "@/components/dashboard/KPICard";
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-const API_URL = "http://127.0.0.1:9000/dmr_data?limit=30";
+const API_URL = "https://dmr-backend.onrender.com/dmr_data";
 
 export default function Dashboard() {
   const { t } = useLanguage();

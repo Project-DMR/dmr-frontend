@@ -16,7 +16,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("http://localhost:9000/dmr_data?limit=1");
+        const res = await fetch("https://dmr-backend.onrender.com/dmr_data");
         const result = await res.json();
 
         if (result.data && result.data.length > 0) {

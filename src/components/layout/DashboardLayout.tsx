@@ -9,6 +9,7 @@ import {
   X,
   ChevronRight,
   LogOut,
+  Brain, // 🧠 AI icon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,9 +22,18 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
+/* =======================
+   SIDEBAR NAV CONFIG
+   (AI placed AFTER Dashboard)
+======================= */
 const navItemsConfig = [
   { path: "/home", labelKey: "home" as const, icon: Home },
+
   { path: "/dashboard", labelKey: "dashboard" as const, icon: LayoutDashboard },
+
+  // 🧠 AI ANALYSIS (correct position)
+  { path: "/ai-analysis", labelKey: "aiAnalysis" as const, icon: Brain },
+
   { path: "/reports", labelKey: "reports" as const, icon: Table },
   { path: "/upload", labelKey: "upload" as const, icon: Upload },
 ];
@@ -46,7 +56,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Mobile overlay */}
+      {/* =======================
+          MOBILE OVERLAY
+      ======================= */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-40 lg:hidden"
@@ -54,7 +66,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         />
       )}
 
-      {/* Sidebar */}
+      {/* =======================
+          SIDEBAR
+      ======================= */}
       <aside
         className={cn(
           "fixed lg:static inset-y-0 left-0 z-50 w-64 bg-sidebar transform transition-transform duration-300 ease-in-out lg:translate-x-0",
@@ -62,7 +76,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         )}
       >
         <div className="flex flex-col h-full">
-          {/* Logo */}
+          {/* LOGO */}
           <div className="flex items-center gap-3 px-6 py-5 border-b border-sidebar-border">
             <img
               src={vsiLogo}
@@ -70,7 +84,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               className="h-14 w-14 object-contain rounded-lg bg-white p-1 shadow-sm"
             />
             <div>
-              <h1 className="font-bold text-sidebar-foreground text-lg leading-tight">
+              <h1 className="font-bold text-sidebar-foreground text-lg">
                 VSI
               </h1>
               <p className="text-xs text-sidebar-foreground/70">
@@ -79,10 +93,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
           </div>
 
-          {/* Navigation */}
+          {/* NAVIGATION */}
           <nav className="flex-1 px-4 py-6 space-y-1">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
+
               return (
                 <Link
                   key={item.path}
@@ -91,7 +106,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   className={cn(
                     "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group",
                     isActive
-                      ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-lg"
+                      ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
                       : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   )}
                 >
@@ -101,14 +116,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                       isActive && "drop-shadow-sm"
                     )}
                   />
+
+                  {/* TEXT LABEL */}
                   <span className="font-medium">{item.label}</span>
-                  {isActive && <ChevronRight className="h-4 w-4 ml-auto" />}
+
+                  {isActive && (
+                    <ChevronRight className="h-4 w-4 ml-auto opacity-80" />
+                  )}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Footer */}
+          {/* FOOTER */}
           <div className="px-6 py-4 border-t border-sidebar-border">
             <p className="text-xs text-sidebar-foreground/60 text-center">
               © 2024 SugarMill Pro
@@ -117,9 +137,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
       </aside>
 
-      {/* Main content */}
+      {/* =======================
+          MAIN CONTENT
+      ======================= */}
       <div className="flex-1 flex flex-col min-h-screen">
-        {/* Top navbar */}
+        {/* TOP NAVBAR */}
         <header className="sticky top-0 z-30 bg-card/80 backdrop-blur-md border-b border-border">
           <div className="flex items-center justify-between px-4 lg:px-6 py-4">
             <div className="flex items-center gap-4">
@@ -138,8 +160,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
               <div className="hidden sm:block">
                 <h2 className="font-semibold text-foreground">
-                  {navItems.find((item) => item.path === location.pathname)
-                    ?.label || "Dashboard"}
+                  {navItems.find(
+                    (item) => item.path === location.pathname
+                  )?.label || "Dashboard"}
                 </h2>
                 <p className="text-xs text-muted-foreground">
                   Daily Manufacturing Report System
@@ -147,7 +170,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </div>
             </div>
 
-            {/* Right side */}
+            {/* RIGHT SIDE */}
             <div className="flex items-center gap-4">
               <LanguageSwitcher />
 
@@ -169,7 +192,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 </p>
               </div>
 
-              {/* Logout Button */}
               <Button
                 variant="ghost"
                 size="sm"
@@ -183,7 +205,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </header>
 
-        {/* Page content */}
+        {/* PAGE CONTENT */}
         <main className="flex-1 p-4 lg:p-6">{children}</main>
       </div>
     </div>

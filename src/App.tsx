@@ -12,6 +12,7 @@ import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Home from "@/pages/Home";
 import Dashboard from "@/pages/Dashboard";
+import AIAnalysis from "@/pages/AIAnalysis";
 import Reports from "@/pages/Reports";
 import Upload from "@/pages/Upload";
 import NotFound from "@/pages/NotFound";
@@ -21,7 +22,7 @@ import { isAuthenticated } from "@/lib/auth";
 
 const queryClient = new QueryClient();
 
-/* Simple route wrapper (NO Outlet) */
+/* Protected wrapper */
 const ProtectedPage = ({ children }: { children: JSX.Element }) => {
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
@@ -38,11 +39,15 @@ const App = () => (
 
         <BrowserRouter>
           <Routes>
-            {/* Public */}
+            {/* =====================
+                PUBLIC ROUTES
+            ===================== */}
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
 
-            {/* Protected pages (same structure as before) */}
+            {/* =====================
+                PROTECTED ROUTES
+            ===================== */}
             <Route
               path="/home"
               element={
@@ -60,6 +65,18 @@ const App = () => (
                 <ProtectedPage>
                   <DashboardLayout>
                     <Dashboard />
+                  </DashboardLayout>
+                </ProtectedPage>
+              }
+            />
+
+            {/* ✅ AI ANALYSIS — AFTER DASHBOARD */}
+            <Route
+              path="/ai-analysis"
+              element={
+                <ProtectedPage>
+                  <DashboardLayout>
+                    <AIAnalysis />
                   </DashboardLayout>
                 </ProtectedPage>
               }
@@ -87,6 +104,9 @@ const App = () => (
               }
             />
 
+            {/* =====================
+                FALLBACK
+            ===================== */}
             <Route path="*" element={<NotFound />} />
           </Routes>
 

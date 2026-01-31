@@ -2,18 +2,32 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { ChatBot } from "@/components/chatbot/ChatBot";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
-import Home from "./pages/Home";
-import Dashboard from "./pages/Dashboard";
-import Reports from "./pages/Reports";
-import Upload from "./pages/Upload";
-import NotFound from "./pages/NotFound";
+/* Pages */
+import Landing from "@/pages/Landing";
+import Login from "@/pages/Login";
+import Home from "@/pages/Home";
+import Dashboard from "@/pages/Dashboard";
+import Reports from "@/pages/Reports";
+import Upload from "@/pages/Upload";
+import NotFound from "@/pages/NotFound";
+
+/* Auth */
+import { isAuthenticated } from "@/lib/auth";
 
 const queryClient = new QueryClient();
+
+/* Simple route wrapper (NO Outlet) */
+const ProtectedPage = ({ children }: { children: JSX.Element }) => {
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -21,18 +35,62 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <DashboardLayout>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/upload" element={<Upload />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </DashboardLayout>
 
-          {/* Floating chatbot stays global */}
+        <BrowserRouter>
+          <Routes>
+            {/* Public */}
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+
+            {/* Protected pages (same structure as before) */}
+            <Route
+              path="/home"
+              element={
+                <ProtectedPage>
+                  <DashboardLayout>
+                    <Home />
+                  </DashboardLayout>
+                </ProtectedPage>
+              }
+            />
+
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedPage>
+                  <DashboardLayout>
+                    <Dashboard />
+                  </DashboardLayout>
+                </ProtectedPage>
+              }
+            />
+
+            <Route
+              path="/reports"
+              element={
+                <ProtectedPage>
+                  <DashboardLayout>
+                    <Reports />
+                  </DashboardLayout>
+                </ProtectedPage>
+              }
+            />
+
+            <Route
+              path="/upload"
+              element={
+                <ProtectedPage>
+                  <DashboardLayout>
+                    <Upload />
+                  </DashboardLayout>
+                </ProtectedPage>
+              }
+            />
+
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+
+          {/* Global chatbot */}
           <ChatBot />
         </BrowserRouter>
       </TooltipProvider>

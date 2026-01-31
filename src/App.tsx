@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { ChatBot } from "@/components/chatbot/ChatBot";
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -16,12 +16,21 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+/* Simple route wrapper (NO Outlet) */
+const ProtectedPage = ({ children }: { children: JSX.Element }) => {
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
+
         <BrowserRouter>
           <DashboardLayout>
             <Routes>

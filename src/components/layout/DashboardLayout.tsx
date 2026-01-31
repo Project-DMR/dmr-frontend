@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { logout } from "@/lib/auth";
 import vsiLogo from "@/assets/vsi-logo.jpeg";
 
 interface DashboardLayoutProps {
@@ -24,7 +25,7 @@ interface DashboardLayoutProps {
    NAV CONFIG
 ------------------------------------------------------- */
 const navItemsConfig = [
-  { path: "/", labelKey: "home" as const, icon: Home },
+  { path: "/home", labelKey: "home" as const, icon: Home },
   { path: "/dashboard", labelKey: "dashboard" as const, icon: LayoutDashboard },
 
   // 🧠 AI ANALYSIS (FIXED)
@@ -37,6 +38,7 @@ const navItemsConfig = [
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { t } = useLanguage();
 
   /* -------------------------------------------------------
@@ -47,6 +49,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     ...item,
     label: t?.nav?.[item.labelKey] ?? item.labelKey.toUpperCase(),
   }));
+
+  const handleLogout = () => {
+    logout();
+    navigate("/", { replace: true });
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -185,6 +192,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   })}
                 </p>
               </div>
+
+              {/* Logout Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="text-red-600 hover:text-red-700"
+              >
+                <LogOut className="h-4 w-4 mr-1" />
+                Logout
+              </Button>
             </div>
           </div>
         </header>

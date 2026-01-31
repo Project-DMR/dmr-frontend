@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { 
-  Home, 
-  LayoutDashboard, 
-  Table, 
-  Upload, 
-  Menu, 
+import {
+  Home,
+  LayoutDashboard,
+  Table,
+  Upload,
+  Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  Brain,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,9 +20,16 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
+/* -------------------------------------------------------
+   NAV CONFIG
+------------------------------------------------------- */
 const navItemsConfig = [
   { path: "/", labelKey: "home" as const, icon: Home },
   { path: "/dashboard", labelKey: "dashboard" as const, icon: LayoutDashboard },
+
+  // 🧠 AI ANALYSIS (FIXED)
+  { path: "/ai-analysis", labelKey: "ai" as const, icon: Brain },
+
   { path: "/reports", labelKey: "reports" as const, icon: Table },
   { path: "/upload", labelKey: "upload" as const, icon: Upload },
 ];
@@ -31,22 +39,26 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const location = useLocation();
   const { t } = useLanguage();
 
-  const navItems = navItemsConfig.map(item => ({
+  /* -------------------------------------------------------
+     SAFE LABEL MAPPING (MAIN FIX)
+     → prevents missing text in sidebar
+  ------------------------------------------------------- */
+  const navItems = navItemsConfig.map((item) => ({
     ...item,
-    label: t.nav[item.labelKey]
+    label: t?.nav?.[item.labelKey] ?? item.labelKey.toUpperCase(),
   }));
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Mobile overlay */}
+      {/* ---------------- MOBILE OVERLAY ---------------- */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
+      {/* ---------------- SIDEBAR ---------------- */}
       <aside
         className={cn(
           "fixed lg:static inset-y-0 left-0 z-50 w-64 bg-sidebar transform transition-transform duration-300 ease-in-out lg:translate-x-0",
@@ -56,14 +68,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center gap-3 px-6 py-5 border-b border-sidebar-border">
-            <img 
-              src={vsiLogo} 
-              alt="VSI Logo" 
+            <img
+              src={vsiLogo}
+              alt="VSI Logo"
               className="h-14 w-14 object-contain rounded-lg bg-white p-1 shadow-sm"
             />
             <div>
-              <h1 className="font-bold text-sidebar-foreground text-lg leading-tight">VSI</h1>
-              <p className="text-xs text-sidebar-foreground/70">संशोधनेन संवृद्धिः</p>
+              <h1 className="font-bold text-sidebar-foreground text-lg">VSI</h1>
+              <p className="text-xs text-sidebar-foreground/70">
+                संशोधनेन संवृद्धिः
+              </p>
             </div>
           </div>
 
@@ -71,6 +85,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <nav className="flex-1 px-4 py-6 space-y-1">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
+
               return (
                 <Link
                   key={item.path}
@@ -78,17 +93,33 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
                     "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group",
-                    isActive 
-                      ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-lg" 
+                    isActive
+                      ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-lg"
                       : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   )}
                 >
-                  <item.icon className={cn(
-                    "h-5 w-5 transition-transform group-hover:scale-110",
-                    isActive && "drop-shadow-sm"
-                  )} />
-                  <span className="font-medium">{item.label}</span>
-                  {isActive && <ChevronRight className="h-4 w-4 ml-auto" />}
+                  <item.icon
+                    className={cn(
+                      "h-5 w-5 transition-transform group-hover:scale-110",
+                      isActive && "drop-shadow-sm"
+                    )}
+                  />
+
+                  {/* ✅ TEXT ALWAYS VISIBLE */}
+                  <span className="font-medium flex items-center gap-2">
+                    {item.label}
+
+                    {/* 🧠 AI BADGE */}
+                    {item.path === "/ai-analysis" && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-semibold">
+                        AI
+                      </span>
+                    )}
+                  </span>
+
+                  {isActive && (
+                    <ChevronRight className="h-4 w-4 ml-auto" />
+                  )}
                 </Link>
               );
             })}
@@ -103,7 +134,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
       </aside>
 
-      {/* Main content */}
+      {/* ---------------- MAIN CONTENT ---------------- */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Top navbar */}
         <header className="sticky top-0 z-30 bg-card/80 backdrop-blur-md border-b border-border">
@@ -115,29 +146,42 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 className="lg:hidden"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
               >
-                {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {sidebarOpen ? (
+                  <X className="h-5 w-5" />
+                ) : (
+                  <Menu className="h-5 w-5" />
+                )}
               </Button>
+
               <div className="hidden sm:block">
                 <h2 className="font-semibold text-foreground">
-                  {navItems.find(item => item.path === location.pathname)?.label || "Dashboard"}
+                  {navItems.find(
+                    (item) => item.path === location.pathname
+                  )?.label || "Dashboard"}
                 </h2>
-                <p className="text-xs text-muted-foreground">Daily Manufacturing Report System</p>
+                <p className="text-xs text-muted-foreground">
+                  Daily Manufacturing Report System
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <LanguageSwitcher />
+
               <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-success/10 rounded-full">
                 <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
-                <span className="text-xs font-medium text-success">Live Data</span>
+                <span className="text-xs font-medium text-success">
+                  Live Data
+                </span>
               </div>
+
               <div className="text-right">
                 <p className="text-sm font-medium text-foreground">Today</p>
                 <p className="text-xs text-muted-foreground">
-                  {new Date().toLocaleDateString('en-US', { 
-                    weekday: 'short', 
-                    month: 'short', 
-                    day: 'numeric' 
+                  {new Date().toLocaleDateString("en-US", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
                   })}
                 </p>
               </div>
@@ -146,9 +190,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 lg:p-6">
-          {children}
-        </main>
+        <main className="flex-1 p-4 lg:p-6">{children}</main>
       </div>
     </div>
   );

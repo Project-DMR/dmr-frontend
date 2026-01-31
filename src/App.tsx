@@ -9,6 +9,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
+import AIAnalysis from "./pages/AIAnalysis";   // ✅ AI PAGE
 import Reports from "./pages/Reports";
 import Upload from "./pages/Upload";
 import NotFound from "./pages/NotFound";
@@ -26,13 +27,14 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/ai-analysis" element={<AIAnalysis />} /> {/* ✅ AFTER DASHBOARD */}
               <Route path="/reports" element={<Reports />} />
               <Route path="/upload" element={<Upload />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </DashboardLayout>
 
-          {/* Floating chatbot stays global */}
+          {/* Global Chatbot */}
           <ChatBot />
         </BrowserRouter>
       </TooltipProvider>

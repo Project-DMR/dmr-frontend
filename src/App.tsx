@@ -21,7 +21,7 @@ import { isAuthenticated } from "@/lib/auth";
 
 const queryClient = new QueryClient();
 
-/* 🔐 Simple route wrapper (NO Outlet) */
+/* Simple route wrapper (NO Outlet) */
 const ProtectedPage = ({ children }: { children: JSX.Element }) => {
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
@@ -38,11 +38,11 @@ const App = () => (
 
         <BrowserRouter>
           <Routes>
-            {/* 🌍 Public */}
+            {/* Public */}
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
 
-            {/* 🏠 Protected pages (same structure as before) */}
+            {/* Protected pages (same structure as before) */}
             <Route
               path="/home"
               element={
@@ -90,7 +90,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
 
-          {/* 🤖 Global chatbot */}
+          {/* Global chatbot */}
           <ChatBot />
         </BrowserRouter>
       </TooltipProvider>

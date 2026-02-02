@@ -9,30 +9,44 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-[#f7f8f5] flex flex-col">
       {/* Header */}
-      <header className="flex items-center justify-between px-10 py-6">
-        <div className="flex items-center gap-3">
-          <img src={logo} alt="VSI" className="h-10" />
-          <h1 className="text-xl font-bold text-green-900">
-            Vasantdada Sugar Institute, Pune
-          </h1>
-        </div>
+      <header className="px-6 lg:px-10 py-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          
+          {/* Logo + Title */}
+          <div className="flex items-center gap-3">
+            <img src={logo} alt="VSI" className="h-10 w-10 object-contain" />
+            <h1 className="text-lg sm:text-xl font-bold text-green-900 leading-tight">
+              Vasantdada Sugar Institute, Pune
+            </h1>
+          </div>
 
-        <div className="flex gap-4">
-          <Button variant="outline" onClick={() => navigate("/login")}>
-            Login
-          </Button>
-          <Button className="bg-yellow-500 text-black hover:bg-yellow-600">
-            Sign Up
-          </Button>
+          {/* Auth Buttons */}
+          <div className="flex gap-3 justify-start lg:justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/login")}
+            >
+              Login
+            </Button>
+
+            <Button
+              size="sm"
+              className="bg-yellow-500 text-black hover:bg-yellow-600"
+            >
+              Sign Up
+            </Button>
+          </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <main className="flex-1 px-10 flex items-center">
+      <main className="flex-1 px-6 lg:px-10 flex items-center">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
+          
           {/* Left: Text */}
           <div className="max-w-2xl">
-            <h2 className="text-5xl font-bold text-green-900 mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-green-900 mb-6">
               Daily Manufacturing Report System
             </h2>
 

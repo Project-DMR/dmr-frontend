@@ -108,6 +108,46 @@ export default function AIAnalysis() {
         </Card>
       )}
 
+{/* Recovery Analysis */}
+<Card>
+  <CardContent className="p-6 space-y-3">
+    <h2 className="text-xl font-semibold flex items-center gap-2">
+      <Activity /> Recovery Analysis
+    </h2>
+
+    {(() => {
+      const actual = data.recovery_analysis.actual;
+      const predicted = data.recovery_analysis.predicted;
+
+      // ✅ Correct display logic
+      const displayDiff = actual - predicted;
+
+      return (
+        <>
+          <div className="grid grid-cols-3 gap-4">
+            <Stat label="Actual Recovery (%)" value={actual.toFixed(2)} />
+
+            <Stat label="Predicted Recovery (%)" value={predicted.toFixed(2)} />
+
+            <Stat
+              label="Difference (Actual − Predicted)"
+              value={`${displayDiff >= 0 ? "+" : ""}${displayDiff.toFixed(2)} %`}
+              highlight={displayDiff >= 0 ? "good" : "bad"}
+            />
+          </div>
+
+          <p className="text-sm text-muted-foreground">
+            {displayDiff >= 0
+              ? "Recovery performance is better than AI prediction. Process efficiency is optimal."
+              : "Recovery is below AI prediction. Operational tuning is recommended."}
+          </p>
+        </>
+      );
+    })()}
+  </CardContent>
+</Card>
+
+
       {/* ================= TREND CARD ================= */}
       {data.recovery_trend && (
         <Card>

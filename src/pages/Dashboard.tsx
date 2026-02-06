@@ -1,13 +1,11 @@
-
-
 import { useEffect, useState } from "react";
 import {
   Factory,
   Droplets,
   Leaf,
   Gauge,
-  TrendingUp,
-  Activity
+  TrendingDown,
+  TrendingUp
 } from "lucide-react";
 
 import {
@@ -45,7 +43,9 @@ export default function Dashboard() {
       .catch(console.error);
   }, []);
 
-  if (!rows.length) return <p className="text-center">Loading data…</p>;
+  if (!rows.length) {
+    return <p className="text-center">Loading data…</p>;
+  }
 
   const latest = rows[0];
 
@@ -55,9 +55,22 @@ export default function Dashboard() {
   const sugarProduced = Number(latest.total_sugar || 0);
   const recovery = Number(latest.nexpected_recovery_prc_cane || 0);
 
-  // Derived values (industry logic)
-  const bagasse = (Number(latest.nbagasse_prc_cane || 0) * caneCrushed) / 100;
-  const molasses = sugarProduced * 0.045; // ~4.5% thumb rule
+  /* ---------------- DERIVED VALUES ---------------- */
+
+  // AI-expected sugar (tons)
+  const expectedSugar = (caneCrushed * recovery) / 100;
+
+  // Sugar loss / gain in tons
+  const sugarLossTons = expectedSugar - sugarProduced;
+
+  // Avoid tiny floating noise
+  const displaySugarLoss =
+    Math.abs(sugarLossTons) < 0.01 ? 0 : sugarLossTons;
+
+  const bagasse =
+    (Number(latest.nbagasse_prc_cane || 0) * caneCrushed) / 100;
+
+  const molasses = sugarProduced * 0.045;
 
   /* ---------------- TREND DATA ---------------- */
 
@@ -90,18 +103,69 @@ export default function Dashboard() {
 
       {/* KPI CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        <KPICard title="Cane Crushed" value={caneCrushed.toLocaleString()} unit="Tons" icon={Factory} />
-        <KPICard title="Sugar Produced" value={sugarProduced.toLocaleString()} unit="Tons" icon={Droplets} />
-        <KPICard title="Recovery" value={recovery.toFixed(2)} unit="%" icon={TrendingUp} />
-        <KPICard title="Bagasse" value={bagasse.toFixed(0)} unit="Tons" icon={Leaf} />
-        <KPICard title="Molasses" value={molasses.toFixed(0)} unit="Tons" icon={Gauge} />
-        <KPICard title="Efficiency" value={recovery.toFixed(2)} unit="%" icon={Activity} />
+
+        <KPICard
+          title="Cane Crushed"
+          value={caneCrushed.toLocaleString()}
+          unit="Tons"
+          icon={Factory}
+        />
+
+        <KPICard
+          title="Sugar Produced"
+          value={sugarProduced.toLocaleString()}
+          unit="Tons"
+          icon={Droplets}
+        />
+
+        <KPICard
+          title="Recovery"
+          value={recovery.toFixed(2)}
+          unit="%"
+          icon={TrendingUp}
+        />
+
+        <KPICard
+          title="Bagasse"
+          value={bagasse.toFixed(0)}
+          unit="Tons"
+          icon={Leaf}
+        />
+
+        <KPICard
+          title="Molasses"
+          value={molasses.toFixed(0)}
+          unit="Tons"
+          icon={Gauge}
+        />
+
+        {/* ✅ FIXED SUGAR LOSS CARD */}
+        <KPICard
+          title="Sugar Loss"
+          value={Math.abs(displaySugarLoss).toFixed(2)}
+          unit="Tons"
+          icon={displaySugarLoss >= 0 ? TrendingDown : TrendingUp}
+          valueClassName={
+            displaySugarLoss > 0
+              ? "text-red-600"
+              : displaySugarLoss < 0
+              ? "text-green-600"
+              : ""
+          }
+          footerText={
+            displaySugarLoss > 0
+              ? "Loss vs AI expected output"
+              : displaySugarLoss < 0
+              ? "Gain over AI expectation"
+              : "On-target production"
+          }
+        />
+
       </div>
 
       {/* CHARTS */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        {/* Crushing vs Sugar */}
         <ChartCard title="Daily Crushing vs Sugar Production">
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={dailyTrendData}>
@@ -116,7 +180,6 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </ChartCard>
 
-        {/* Recovery Trend */}
         <ChartCard title="Recovery Trend">
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={dailyTrendData}>
@@ -124,12 +187,15 @@ export default function Dashboard() {
               <XAxis dataKey="date" />
               <YAxis domain={[0, 14]} />
               <Tooltip />
-              <Line dataKey="recovery" stroke="#06b6d4" strokeWidth={3} />
+              <Line
+                dataKey="recovery"
+                stroke="#06b6d4"
+                strokeWidth={3}
+              />
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>
 
-        {/* Production Comparison */}
         <ChartCard title="Production Comparison">
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={resourceDistribution}>
@@ -142,7 +208,6 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </ChartCard>
 
-        {/* Resource Distribution */}
         <ChartCard title="Resource Distribution">
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>

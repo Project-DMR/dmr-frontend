@@ -9,7 +9,7 @@ import {
   X,
   ChevronRight,
   LogOut,
-  Brain, // 🧠 AI icon
+  Brain, //  AI icon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -45,9 +45,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { t } = useLanguage();
 
   const navItems = navItemsConfig.map((item) => ({
-    ...item,
-    label: t.nav[item.labelKey],
-  }));
+  ...item,
+  label: t.nav[item.labelKey] ?? "AI Analysis",
+}));
 
   const handleLogout = () => {
     logout();

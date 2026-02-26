@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import logo from "@/assets/vsi-logo.jpeg";
 import landingImage from "@/assets/landing-page.png";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Landing() {
   const navigate = useNavigate();

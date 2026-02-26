@@ -9,12 +9,14 @@ import {
   X,
   ChevronRight,
   LogOut,
-  Brain, //  AI icon
+  Brain,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAlerts } from "@/contexts/AlertContext";
 import { logout } from "@/lib/auth";
 import vsiLogo from "@/assets/vsi-logo.jpeg";
 
@@ -24,16 +26,11 @@ interface DashboardLayoutProps {
 
 /* =======================
    SIDEBAR NAV CONFIG
-   (AI placed AFTER Dashboard)
 ======================= */
 const navItemsConfig = [
   { path: "/home", labelKey: "home" as const, icon: Home },
-
   { path: "/dashboard", labelKey: "dashboard" as const, icon: LayoutDashboard },
-
-  // 🧠 AI ANALYSIS (correct position)
   { path: "/ai-analysis", labelKey: "aiAnalysis" as const, icon: Brain },
-
   { path: "/reports", labelKey: "reports" as const, icon: Table },
   { path: "/upload", labelKey: "upload" as const, icon: Upload },
 ];
@@ -43,11 +40,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { alerts } = useAlerts(); // ✅ Hook inside component
+
+  const unreadCount = alerts.filter((a) => !a.acknowledged).length;
 
   const navItems = navItemsConfig.map((item) => ({
-  ...item,
-  label: t.nav[item.labelKey] ?? "AI Analysis",
-}));
+    ...item,
+    label: t.nav[item.labelKey] ?? "AI Analysis",
+  }));
 
   const handleLogout = () => {
     logout();
@@ -56,9 +56,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* =======================
-          MOBILE OVERLAY
-      ======================= */}
+      {/* MOBILE OVERLAY */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-40 lg:hidden"
@@ -66,13 +64,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         />
       )}
 
-      {/* =======================
-          SIDEBAR
-      ======================= */}
+      {/* SIDEBAR */}
       <aside
         className={cn(
           "fixed lg:static inset-y-0 left-0 z-50 w-64 bg-sidebar transform transition-transform duration-300 ease-in-out lg:translate-x-0",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         <div className="flex flex-col h-full">
@@ -84,9 +80,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               className="h-14 w-14 object-contain rounded-lg bg-white p-1 shadow-sm"
             />
             <div>
-              <h1 className="font-bold text-sidebar-foreground text-lg">
-                VSI
-              </h1>
+              <h1 className="font-bold text-sidebar-foreground text-lg">VSI</h1>
               <p className="text-xs text-sidebar-foreground/70">
                 संशोधनेन संवृद्धिः
               </p>
@@ -107,17 +101,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group",
                     isActive
                       ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
-                      : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                   )}
                 >
                   <item.icon
                     className={cn(
                       "h-5 w-5 transition-transform group-hover:scale-110",
-                      isActive && "drop-shadow-sm"
+                      isActive && "drop-shadow-sm",
                     )}
                   />
-
-                  {/* TEXT LABEL */}
                   <span className="font-medium">{item.label}</span>
 
                   {isActive && (
@@ -131,19 +123,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           {/* FOOTER */}
           <div className="px-6 py-4 border-t border-sidebar-border">
             <p className="text-xs text-sidebar-foreground/60 text-center">
-              © 2024 SugarMill Pro
+              © 2026 SugarMill Pro
             </p>
           </div>
         </div>
       </aside>
 
-      {/* =======================
-          MAIN CONTENT
-      ======================= */}
+      {/* MAIN CONTENT */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* TOP NAVBAR */}
         <header className="sticky top-0 z-30 bg-card/80 backdrop-blur-md border-b border-border">
           <div className="flex items-center justify-between px-4 lg:px-6 py-4">
+            {/* LEFT SIDE */}
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
@@ -160,9 +151,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
               <div className="hidden sm:block">
                 <h2 className="font-semibold text-foreground">
-                  {navItems.find(
-                    (item) => item.path === location.pathname
-                  )?.label || "Dashboard"}
+                  {navItems.find((item) => item.path === location.pathname)
+                    ?.label || "Dashboard"}
                 </h2>
                 <p className="text-xs text-muted-foreground">
                   Daily Manufacturing Report System
@@ -171,17 +161,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
 
             {/* RIGHT SIDE */}
-            <div className="flex items-center gap-4">
+            {/* RIGHT SIDE */}
+            <div className="flex items-center gap-6">
               <LanguageSwitcher />
 
-              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-success/10 rounded-full">
-                <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
-                <span className="text-xs font-medium text-success">
-                  Live Data
-                </span>
-              </div>
-
-              <div className="text-right">
+              {/* Date */}
+              <div className="text-right pr-2">
                 <p className="text-sm font-medium text-foreground">Today</p>
                 <p className="text-xs text-muted-foreground">
                   {new Date().toLocaleDateString("en-US", {
@@ -192,11 +177,30 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 </p>
               </div>
 
+              {/* 🔔 Alerts Bell */}
+              {/* 🔔 Alerts Bell */}
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate("/alerts")}
+                  className="border border-border hover:bg-muted/50 transition"
+                >
+                  <Bell className="h-5 w-5 text-foreground" />
+                </Button>
+
+                {/* 🔴 Notification Dot */}
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-600 rounded-full animate-pulse" />
+                )}
+              </div>
+
+              {/* Logout Button */}
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={handleLogout}
-                className="text-red-600 hover:text-red-700"
+                className="border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700"
               >
                 <LogOut className="h-4 w-4 mr-1" />
                 Logout

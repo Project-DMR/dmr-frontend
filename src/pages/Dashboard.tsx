@@ -194,20 +194,21 @@ export default function Dashboard() {
         </ChartCard>
 
         <ChartCard title="Recovery Trend">
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={dailyTrendData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis domain={[0, 14]} />
-              <Tooltip />
-              <Line
-                dataKey="recovery"
-                stroke="#06b6d4"
-                strokeWidth={3}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </ChartCard>
+  <ResponsiveContainer width="100%" height={300}>
+    <LineChart data={dailyTrendData}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="date" />
+      <YAxis domain={["dataMin - 1", "dataMax + 1"]} />
+      <Tooltip />
+      <Line
+        type="monotone"
+        dataKey="recovery"
+        stroke="#06b6d4"
+        strokeWidth={3}
+      />
+    </LineChart>
+  </ResponsiveContainer>
+</ChartCard>
 
         <ChartCard title="Production Comparison">
           <ResponsiveContainer width="100%" height={300}>

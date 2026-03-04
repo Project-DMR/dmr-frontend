@@ -39,7 +39,14 @@ export default function Dashboard() {
   useEffect(() => {
     fetch(API_URL)
       .then(res => res.json())
-      .then(data => setRows(data.data || []))
+      .then(data => {
+        // Supports both { data: [...] } and direct array []
+        if (Array.isArray(data)) {
+          setRows(data);
+        } else {
+          setRows(data.data ?? []);
+        }
+      })
       .catch(console.error);
   }, []);
 
@@ -51,24 +58,27 @@ export default function Dashboard() {
 
   /* ---------------- REAL DB VALUES ---------------- */
 
-  const caneCrushed = Number(latest.nday_gross_cane || 0);
-  const sugarProduced = Number(latest.total_sugar || 0);
-  const recovery = Number(latest.nexpected_recovery_prc_cane || 0);
+  const caneCrushed = Number(latest?.nday_gross_cane ?? 0);
+  const sugarProduced = Number(latest?.total_sugar ?? 0);
+
+  // ✅ FIXED: Use AI predicted recovery (with fallback for old DB column)
+  const recovery = Number(
+    latest?.predicted_recovery ??
+    latest?.nexpected_recovery_prc_cane ??
+    0
+  );
 
   /* ---------------- DERIVED VALUES ---------------- */
 
-  // AI-expected sugar (tons)
   const expectedSugar = (caneCrushed * recovery) / 100;
 
-  // Sugar loss / gain in tons
   const sugarLossTons = expectedSugar - sugarProduced;
 
-  // Avoid tiny floating noise
   const displaySugarLoss =
     Math.abs(sugarLossTons) < 0.01 ? 0 : sugarLossTons;
 
   const bagasse =
-    (Number(latest.nbagasse_prc_cane || 0) * caneCrushed) / 100;
+    (Number(latest?.nbagasse_prc_cane ?? 0) * caneCrushed) / 100;
 
   const molasses = sugarProduced * 0.045;
 
@@ -79,9 +89,13 @@ export default function Dashboard() {
     .reverse()
     .map(r => ({
       date: r.dcrush_date,
-      crushing: Number(r.nday_gross_cane || 0),
-      sugar: Number(r.total_sugar || 0),
-      recovery: Number(r.nexpected_recovery_prc_cane || 0),
+      crushing: Number(r?.nday_gross_cane ?? 0),
+      sugar: Number(r?.total_sugar ?? 0),
+      recovery: Number(
+        r?.predicted_recovery ??
+        r?.nexpected_recovery_prc_cane ??
+        0
+      ),
     }));
 
   /* ---------------- PIE DATA ---------------- */
@@ -139,7 +153,6 @@ export default function Dashboard() {
           icon={Gauge}
         />
 
-        {/* ✅ FIXED SUGAR LOSS CARD */}
         <KPICard
           title="Sugar Loss"
           value={Math.abs(displaySugarLoss).toFixed(2)}

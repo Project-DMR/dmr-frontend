@@ -125,20 +125,26 @@ const diff = Number(data?.recovery_analysis?.difference ?? 0);
       )}
 
       {/* ================= ROOT CAUSE ================= */}
-      {data?.root_cause && (
-        <Card className="border-l-4 border-red-600">
-          <CardContent className="p-6 space-y-3">
-            <h2 className="text-xl font-semibold flex items-center gap-2">
-              <Brain /> Root Cause
-            </h2>
+{data?.root_cause && (
+  <Card className="border-l-4 border-red-600">
+    <CardContent className="p-6 space-y-3">
+      <h2 className="text-xl font-semibold flex items-center gap-2">
+        <Brain /> Root Cause
+      </h2>
 
-            <Stat
-              label="Primary Cause"
-              value={data.root_cause.primary_cause ?? "N/A"}
-            />
-          </CardContent>
-        </Card>
-      )}
+      <Stat
+        label="Status"
+        value={data.root_cause.status ?? "N/A"}
+      />
+
+      {data.root_cause.details?.map((item, index) => (
+        <p key={index} className="text-sm text-muted-foreground">
+          • {item}
+        </p>
+      ))}
+    </CardContent>
+  </Card>
+)}
 
       {/* ================= ALERTS ================= */}
       <Card>

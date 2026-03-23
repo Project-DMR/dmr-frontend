@@ -83,7 +83,7 @@ export default function Home() {
 
           {[
             { label: "Cane Crushed", value: kpi.caneCrushed, unit: "tons" },
-            { label: "Sugar Produced", value: kpi.totalSugar, unit: "kg" },
+            { label: "Sugar Produced", value: kpi.totalSugar, unit: "tons" },
             { label: "Expected Recovery", value: kpi.expectedRecovery, unit: "%" },
             { label: "Working Hours", value: kpi.workingHours, unit: "hrs" },
           ].map((stat) => (

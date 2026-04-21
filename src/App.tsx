@@ -16,6 +16,7 @@ import AIAnalysis from "@/pages/AIAnalysis";
 import Reports from "@/pages/Reports";
 import Upload from "@/pages/Upload";
 import NotFound from "@/pages/NotFound";
+import Alerts from "@/pages/Alerts";
 
 /* Auth */
 import { isAuthenticated } from "@/lib/auth";
@@ -99,6 +100,16 @@ const App = () => (
                 <ProtectedPage>
                   <DashboardLayout>
                     <Upload />
+                  </DashboardLayout>
+                </ProtectedPage>
+              }
+            />
+            <Route
+              path="/alerts"
+              element={
+                <ProtectedPage>
+                  <DashboardLayout>
+                    <Alerts />
                   </DashboardLayout>
                 </ProtectedPage>
               }

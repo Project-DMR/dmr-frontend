@@ -22,6 +22,11 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 const API_URL = "https://dmr-backend.onrender.com/dmr_data";
 
+// ✅ ADD THIS
+function getFactoryCode() {
+  return localStorage.getItem("factory_code");
+}
+
 export default function Reports() {
   const { t } = useLanguage();
 
@@ -34,7 +39,9 @@ export default function Reports() {
 
   /* ---------------- FETCH DATA ---------------- */
   useEffect(() => {
-    fetch(API_URL)
+    const factoryCode = getFactoryCode();
+
+    fetch(`${API_URL}?factory_code=${factoryCode}`) // ✅ ONLY CHANGE
       .then(res => res.json())
       .then(data => setRows(data.data || []))
       .catch(console.error);

@@ -21,10 +21,16 @@ export default function AIAnalysis() {
   const [data, setData] = useState<AIResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // ✅ NEW: get factory code
+  const factoryCode = localStorage.getItem("factory_code");
+
   useEffect(() => {
-    fetch("https://dmr-backend.onrender.com/ai_analysis", {
-      cache: "no-store",
-    })
+    fetch(
+      `https://dmr-backend.onrender.com/ai_analysis?factory_code=${factoryCode}`,
+      {
+        cache: "no-store",
+      }
+    )
       .then((res) => res.json())
       .then((result) => {
         setData(result);
@@ -48,9 +54,11 @@ export default function AIAnalysis() {
       </div>
     );
   }
-const actual = Number(data?.recovery_analysis?.actual_recovery ?? 0);
-const predicted = Number(data?.recovery_analysis?.predicted_recovery ?? 0);
-const diff = Number(data?.recovery_analysis?.difference ?? 0);
+
+  const actual = Number(data?.recovery_analysis?.actual_recovery ?? 0);
+  const predicted = Number(data?.recovery_analysis?.predicted_recovery ?? 0);
+  const diff = Number(data?.recovery_analysis?.difference ?? 0);
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
 
@@ -125,26 +133,26 @@ const diff = Number(data?.recovery_analysis?.difference ?? 0);
       )}
 
       {/* ================= ROOT CAUSE ================= */}
-{data?.root_cause && (
-  <Card className="border-l-4 border-red-600">
-    <CardContent className="p-6 space-y-3">
-      <h2 className="text-xl font-semibold flex items-center gap-2">
-        <Brain /> Root Cause
-      </h2>
+      {data?.root_cause && (
+        <Card className="border-l-4 border-red-600">
+          <CardContent className="p-6 space-y-3">
+            <h2 className="text-xl font-semibold flex items-center gap-2">
+              <Brain /> Root Cause
+            </h2>
 
-      <Stat
-        label="Status"
-        value={data.root_cause.status ?? "N/A"}
-      />
+            <Stat
+              label="Status"
+              value={data.root_cause.status ?? "N/A"}
+            />
 
-      {data.root_cause.details?.map((item, index) => (
-        <p key={index} className="text-sm text-muted-foreground">
-          • {item}
-        </p>
-      ))}
-    </CardContent>
-  </Card>
-)}
+            {data.root_cause.details?.map((item: string, index: number) => (
+              <p key={index} className="text-sm text-muted-foreground">
+                • {item}
+              </p>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       {/* ================= ALERTS ================= */}
       <Card>

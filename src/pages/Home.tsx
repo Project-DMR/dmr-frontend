@@ -13,10 +13,20 @@ export default function Home() {
     workingHours: "NA",
   });
 
+  // ✅ ADD THIS
+  function getFactoryCode() {
+    return localStorage.getItem("factory_code");
+  }
+
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("https://dmr-backend.onrender.com/dmr_data");
+        const factoryCode = getFactoryCode();
+
+        const res = await fetch(
+          `https://dmr-backend.onrender.com/dmr_data?factory_code=${factoryCode}`
+        );
+
         const result = await res.json();
 
         if (result.data && result.data.length > 0) {

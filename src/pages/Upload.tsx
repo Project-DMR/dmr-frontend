@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Upload as UploadIcon,
   Loader2,
@@ -14,6 +14,15 @@ type Status = "idle" | "uploading" | "success" | "error";
 export default function Upload() {
   const { toast } = useToast();
   const [status, setStatus] = useState<Status>("idle");
+
+  // ✅ NEW: factory code state
+  const [factoryCode, setFactoryCode] = useState("");
+
+  // ✅ OPTIONAL: auto-load from login
+  useEffect(() => {
+    const savedCode = localStorage.getItem("factory_code");
+    if (savedCode) setFactoryCode(savedCode);
+  }, []);
 
   const [formData, setFormData] = useState({
     dcrush_date: "",
@@ -54,6 +63,13 @@ export default function Upload() {
   };
 
   const handleUpload = async () => {
+
+    // ✅ NEW validation
+    if (!factoryCode) {
+      toast({ title: "Factory code required", variant: "destructive" });
+      return;
+    }
+
     if (!formData.dcrush_date) {
       toast({ title: "Date required", variant: "destructive" });
       return;
@@ -70,6 +86,10 @@ export default function Upload() {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
+
+            // ✅ NEW: send factory_code
+            factory_code: factoryCode,
+
             ...formData,
 
             nday_gross_cane: Number(formData.nday_gross_cane || 0),
@@ -128,6 +148,13 @@ export default function Upload() {
       </h1>
 
       <div className="bg-card border rounded-xl p-6 space-y-4">
+
+        {/* ✅ NEW FACTORY CODE INPUT */}
+        <Input
+          placeholder="Factory Code (e.g., VSI001)"
+          value={factoryCode}
+          onChange={(e) => setFactoryCode(e.target.value)}
+        />
 
         <Input type="date" name="dcrush_date" value={formData.dcrush_date} onChange={handleChange} />
 

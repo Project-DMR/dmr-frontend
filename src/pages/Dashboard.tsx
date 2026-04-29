@@ -32,12 +32,19 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 const API_URL = "https://dmr-backend.onrender.com/dmr_data";
 
+// ✅ ADD THIS (factory code getter)
+function getFactoryCode() {
+  return localStorage.getItem("factory_code");
+}
+
 export default function Dashboard() {
   const { t } = useLanguage();
   const [rows, setRows] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch(API_URL)
+    const factoryCode = getFactoryCode();
+
+    fetch(`${API_URL}?factory_code=${factoryCode}`) // ✅ ONLY CHANGE HERE
       .then(res => res.json())
       .then(data => {
         // Supports both { data: [...] } and direct array []
@@ -158,13 +165,6 @@ export default function Dashboard() {
           value={Math.abs(displaySugarLoss).toFixed(2)}
           unit="Tons"
           icon={displaySugarLoss >= 0 ? TrendingDown : TrendingUp}
-          valueClassName={
-            displaySugarLoss > 0
-              ? "text-red-600"
-              : displaySugarLoss < 0
-              ? "text-green-600"
-              : ""
-          }
           footerText={
             displaySugarLoss > 0
               ? "Loss vs AI expected output"
@@ -194,21 +194,21 @@ export default function Dashboard() {
         </ChartCard>
 
         <ChartCard title="Recovery Trend">
-  <ResponsiveContainer width="100%" height={300}>
-    <LineChart data={dailyTrendData}>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="date" />
-      <YAxis domain={["dataMin - 1", "dataMax + 1"]} />
-      <Tooltip />
-      <Line
-        type="monotone"
-        dataKey="recovery"
-        stroke="#06b6d4"
-        strokeWidth={3}
-      />
-    </LineChart>
-  </ResponsiveContainer>
-</ChartCard>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={dailyTrendData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis domain={["dataMin - 1", "dataMax + 1"]} />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="recovery"
+                stroke="#06b6d4"
+                strokeWidth={3}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </ChartCard>
 
         <ChartCard title="Production Comparison">
           <ResponsiveContainer width="100%" height={300}>

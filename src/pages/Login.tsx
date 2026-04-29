@@ -16,8 +16,21 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = () => {
+    // ✅ OPTIONAL VALIDATION (safe, no logic break)
+    if (!factoryCode.startsWith("VSI")) {
+      setError("Factory code must be like VSI001");
+      return;
+    }
+
     const success = login(email, password, factoryCode);
+
     if (success) {
+      // ✅ MOST IMPORTANT — STORE FACTORY CODE
+      localStorage.setItem("factory_code", factoryCode);
+
+      // optional (useful later)
+      localStorage.setItem("user_email", email);
+
       navigate("/home");
     } else {
       setError("Invalid credentials or factory code");
@@ -68,7 +81,9 @@ export default function Login() {
             <Input
               placeholder="Factory Code"
               value={factoryCode}
-              onChange={(e) => setFactoryCode(e.target.value)}
+              onChange={(e) =>
+                setFactoryCode(e.target.value.toUpperCase()) // ✅ auto uppercase
+              }
             />
 
             {error && <p className="text-sm text-red-500">{error}</p>}
